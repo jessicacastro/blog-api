@@ -1,0 +1,293 @@
+# Blog API
+
+## 1. Criação do projeto
+
+Primeiro devemos fazer é criar a pasta do nosso projeto:
+
+```powershell
+mkdir blog-api
+```
+
+Iniciaremos o projeto com o seguinte comando:
+
+```powershell
+npm init -y
+```
+
+Agora será necessário definir e instalar todas nossas dependências. Vamos utulizar o `express`, `sequelize`, `@faker-js/faker` e `mysql2`:
+
+```powershell
+npm i express sequelize mysql2 @faker-js/faker
+```
+
+Vamos inicializar o nosso app com o express para validarmos com um **Olá, Mundo!**, com isso criaremos no `index.js`:
+
+````js
+// index.js
+
+const express = require('express')
+const app = express()
+
+app.listen(3000, () => console.log('Rodando...'))
+````
+
+Agora vamos executar para validarmos que a aplicação está funcionando:
+````powershell
+npm start
+````
+
+> Não podemos esquecer de criar o arquivo `.gitignore` para nos ignorarmos o `node_modules`.
+
+
+## 2. Database
+
+Vamos adicionar um "facilitador" para conectar e utilizar o banco de dados, o `Sequelize`. Já instala-mos esse pacote anteriormente, também podemos instalar o `sequelize-cli` para podemos executar funcionalidades por linha de comando ou podemos utilizar o `npx`.
+
+### Configuração
+
+Primeiro vamos criar nosso arquivo de configuração do `sequelize` para poder organizarmos os arquivos gerados automaticamente nos seus devidos lugares. Começamos com o arquivo `.sequelizerc`:
+
+````js
+// .sequelizerc
+
+const path = require("path");
+
+module.exports = {
+  'config': path.resolve('config', 'database.json'),
+  'models-path': path.resolve('db', 'models'),
+  'seeders-path': path.resolve('db', 'seeders'),
+  'migrations-path': path.resolve('db', 'migrations')
+};
+````
+
+Agora vamos executar o `sequelize-cli`:
+
+````powershell
+npx sequelize-cli init
+````
+> A partir desse ponto você pode ver que as pastas que vamos trablhar já foram criadas.  É importante acessar o arquivo `config/database.js` e alterar os valores de configuração do banco, por padrão usamos a key `development`.
+
+
+### Migrations
+
+````powershell
+npx sequelize-cli migration:generate --name create-post
+````
+
+`db/migrations/xxxxx-create-post.js`
+````javascript
+// db/migrations/xxxxx-create-post.js
+
+module.exports = {
+  async up(queryInterface, Sequelize) {
+    await queryInterface.createTable('posts', {
+      id: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: Sequelize.INTEGER
+      },
+      title: {
+        type: Sequelize.STRING
+      },
+      description: {
+        type: Sequelize.TEXT
+      },
+      createdAt: {
+        allowNull: false,
+        type: Sequelize.DATE
+      }
+    });
+  },
+  async down(queryInterface, Sequelize) {
+    await queryInterface.dropTable('posts');
+  }
+};
+````
+
+### Factories
+
+`db/factories/postFactory.js`
+````javascript
+// db/factories/postFactory.js
+const faker = require('@faker-js/faker/locale/pt_BR');
+
+function make() {
+    return {
+        title: faker.hacker.phrase(),
+        description: faker.lorem.paragraphs(),
+        createdAt: faker.date.past()
+    }
+}
+
+module.exports = (n) => {
+
+    if (n == 1) {
+        return make();
+    }
+
+    const elements = [];
+
+    for (let i = 0; i < n; i++) {
+        elements[i] = make();
+    }
+
+    return elements
+}
+
+````
+
+
+### Seeds
+
+
+````powershell
+npx sequelize-cli seed:generate --name posts
+````
+
+`db/seeders/xxxx-posts.js`
+````javascript
+// db/seeders/xxxx-posts.js
+module.exports = {
+  async up(queryInterface, Sequelize) {
+    await queryInterface.createTable('posts', {
+      id: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: Sequelize.INTEGER
+      },
+      title: {
+        type: Sequelize.STRING
+      },
+      description: {
+        type: Sequelize.TEXT
+      },
+      createdAt: {
+        allowNull: false,
+        type: Sequelize.DATE
+      }
+    });
+  },
+  async down(queryInterface, Sequelize) {
+    await queryInterface.dropTable('posts');
+  }
+};
+
+````
+### Models
+
+`db/models/post.js`
+````javascript
+// db/models/post.js
+
+module.exports = (sequelize, DataTypes) => {
+  const post = sequelize.define(
+    'Post',
+    {
+      id: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: DataTypes.INTEGER
+      },
+      title: DataTypes.STRING,
+      description: DataTypes.TEXT,
+      createdAt: DataTypes.DATE
+    },
+    {
+      timestamps: false,
+      tableName: 'posts',
+    }
+  );
+
+  return post;
+};
+````
+
+
+## 3. Aplicação
+
+### Controllers
+
+`app\controllers\postController.js`
+````js
+// app\controllers\postController.js
+const { Post } = require('../../db/models')
+
+const postController = {
+    index: async (req, res) => {
+        const posts = await Post.findAll();
+
+        return res.json(posts);
+    },
+    show: async (req, res) => {
+        const { id } = req.params;
+        const post = await Post.findByPk(id);
+
+        return res.json(post);
+    },
+    store: async (req, res) => {
+        const { title, description } = req.body;
+
+        const post = await Post.create({
+            title,
+            description,
+            createdAt: new Date()
+        });
+
+        return res.status(201).json(post);
+    },
+    update: async (req, res) => {
+        const { id } = req.params;
+        const { title, description } = req.body;
+
+        const post = await Post.findByPk(id);
+        post.set({ title, description });
+        await post.save();
+
+        return res.json(post);
+    },
+    delete: async (req, res) => {
+        const { id } = req.params;
+        await Post.destroy({ where: { id } });
+
+        return res.status(204).send()
+    }
+}
+
+module.exports = postController;
+````
+
+### Routers
+
+`app\routes\postRouter.js`
+````js
+// app\routes\postRouter.js
+var express = require('express');
+const postController = require('../controllers/postController');
+var router = express.Router();
+
+router.get('/', postController.index);
+router.post('/', postController.store);
+router.get('/:id', postController.show);
+router.put('/:id', postController.update);
+router.delete('/:id', postController.delete);
+
+module.exports = router;
+````
+
+### Server
+
+`index.js`
+````js
+// index.js
+const express = require('express')
+const app = express();
+const postRouter = require('./app/routes/postRouter')
+
+app.use(express.json());
+app.use('/posts', postRouter);
+
+app.listen(3000, () => console.log('Rodando...'));
+````
