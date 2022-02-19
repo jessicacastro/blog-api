@@ -1,16 +1,18 @@
 const faker = require('@faker-js/faker/locale/pt_BR');
 
 function make() {
-    return {
+    const post =  {
         title: faker.hacker.phrase(),
         description: faker.lorem.paragraphs(),
         createdAt: faker.date.past()
     }
+
+    return post;
 }
 
-module.exports = (n) => {
+const factory = (n) =>  {
 
-    if (n == 1) {
+    if (n == undefined || n == 1) {
         return make();
     }
 
@@ -22,3 +24,5 @@ module.exports = (n) => {
 
     return elements
 }
+
+module.exports = factory;

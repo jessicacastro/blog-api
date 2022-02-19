@@ -75,7 +75,7 @@ npx sequelize-cli migration:generate --name create-post
 ````
 
 `db/migrations/xxxxx-create-post.js`
-````javascript
+````js
 // db/migrations/xxxxx-create-post.js
 
 module.exports = {
@@ -108,21 +108,23 @@ module.exports = {
 ### Factories
 
 `db/factories/postFactory.js`
-````javascript
+````js
 // db/factories/postFactory.js
 const faker = require('@faker-js/faker/locale/pt_BR');
 
 function make() {
-    return {
+    const post =  {
         title: faker.hacker.phrase(),
         description: faker.lorem.paragraphs(),
         createdAt: faker.date.past()
     }
+
+    return post;
 }
 
-module.exports = (n) => {
+const factory = (n) =>  {
 
-    if (n == 1) {
+    if (n == undefined || n == 1) {
         return make();
     }
 
@@ -135,18 +137,18 @@ module.exports = (n) => {
     return elements
 }
 
+module.exports = factory;
 ````
 
 
 ### Seeds
-
 
 ````powershell
 npx sequelize-cli seed:generate --name posts
 ````
 
 `db/seeders/xxxx-posts.js`
-````javascript
+````js
 // db/seeders/xxxx-posts.js
 module.exports = {
   async up(queryInterface, Sequelize) {
@@ -173,12 +175,20 @@ module.exports = {
     await queryInterface.dropTable('posts');
   }
 };
-
 ````
+
+Com tudo configurado, já podemos inserir os primeiros
+
+````powershell
+npx sequelize-cli db:seed:all 
+````
+
+> Agora é já podemos verificar banco de dados e ver que alguns dados já foram inseridos. 
+
 ### Models
 
 `db/models/post.js`
-````javascript
+````js
 // db/models/post.js
 
 module.exports = (sequelize, DataTypes) => {
