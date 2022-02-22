@@ -347,4 +347,8 @@ app.listen(3000, () => console.log('Rodando...'));
 
 Agora podemos executar 
 
+````powershell
+node index.js
+````
+
 
