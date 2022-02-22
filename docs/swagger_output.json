@@ -1,0 +1,213 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Blog API",
+    "description": "Documentação da API em Nodejs, desenvolvida pelos aluno da turma Gerando Falcões Fullstack Node. No intuito de alimentar aplicações frontend desenvolvidas com o Reactjs durante a aula."
+  },
+  "host": "localhost:3000",
+  "basePath": "/",
+  "tags": [
+    {
+      "name": "Posts",
+      "description": "Endpoints"
+    }
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/posts/": {
+      "get": {
+        "tags": [
+          "Posts"
+        ],
+        "summary": "Listagem de posts.",
+        "description": "Listagem de posts.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Posts"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Posts"
+        ],
+        "summary": "Cadastra post.",
+        "description": "Cadastra post.",
+        "parameters": [
+          {
+            "name": "obj",
+            "in": "body",
+            "description": "Post information.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/AddPost"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": {
+              "$ref": "#/definitions/Post"
+            }
+          },
+          "400": {
+            "description": "O atributo title não foi enviado."
+          }
+        }
+      }
+    },
+    "/posts/{id}": {
+      "get": {
+        "tags": [
+          "Posts"
+        ],
+        "summary": "Consulta de post.",
+        "description": "Consulta de post.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "Post ID."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Post"
+            }
+          },
+          "404": {
+            "description": "O post de id = X não foi encontrado."
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Posts"
+        ],
+        "summary": "Atualiza post.",
+        "description": "Atualiza post.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "Post ID."
+          },
+          {
+            "name": "obj",
+            "in": "body",
+            "description": "Post information.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/AddPost"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Post"
+            }
+          },
+          "400": {
+            "description": "O atributo title não foi enviado."
+          },
+          "404": {
+            "description": "O post de id = X não foi encontrado."
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Posts"
+        ],
+        "summary": "Deleta post.",
+        "description": "Deleta post.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "Post ID."
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Deletado com sucesso."
+          },
+          "404": {
+            "description": "O post de id = X não foi encontrado."
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Post": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number",
+          "example": 1
+        },
+        "title": {
+          "type": "string",
+          "example": "examplo"
+        },
+        "description": {
+          "type": "string",
+          "example": "example"
+        },
+        "createdAt": {
+          "type": "string",
+          "example": "12/12/2022"
+        }
+      }
+    },
+    "AddPost": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "example": "Example"
+        },
+        "description": {
+          "type": "string",
+          "example": "example"
+        }
+      },
+      "required": [
+        "title",
+        "description"
+      ]
+    },
+    "Posts": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Post"
+      }
+    }
+  }
+}

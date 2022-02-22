@@ -366,4 +366,10 @@ Execute o testes:
 npm test
 ````
 
+# Documentação
 
+Estamos utilizando um módulo de geração de documentação automática, Swagger. Então sempre que atualizarmos as definições da nossa documentação vamos precisar executar o seguinte comando para gerar uma atual nossa documentação
+
+````powershell
+npm run swagger-autogen
+````
