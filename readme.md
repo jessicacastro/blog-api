@@ -105,6 +105,12 @@ module.exports = {
 };
 ````
 
+Agora podemos executar nossa migration
+
+`````powershell
+npx sequelize-cli db:migrate
+````
+
 ### Factories
 
 `db/factories/postFactory.js`
