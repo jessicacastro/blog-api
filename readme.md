@@ -110,7 +110,7 @@ module.exports = {
 `db/factories/postFactory.js`
 ````js
 // db/factories/postFactory.js
-const faker = require('@faker-js/faker/locale/pt_BR');
+const { faker } = require('@faker-js/faker');
 
 function make() {
     const post =  {
@@ -300,4 +300,19 @@ app.use(express.json());
 app.use('/posts', postRouter);
 
 app.listen(3000, () => console.log('Rodando...'));
+````
+
+Agora podemos executar 
+
+````powershell
+npm start
+````
+
+# Tests
+
+Execute o testes:
+
+
+````powershell
+npm test
 ````
