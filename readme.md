@@ -33,7 +33,7 @@ app.listen(3000, () => console.log('Rodando...'))
 
 Agora vamos executar para validarmos que a aplicação está funcionando:
 ````powershell
-npm start
+node index.js
 ````
 
 > Não podemos esquecer de criar o arquivo `.gitignore` para nos ignorarmos o `node_modules`.
@@ -187,9 +187,9 @@ npx sequelize-cli db:seed:all
 
 ### Models
 
-`db/models/post.js`
+`db/models/Post.js`
 ````js
-// db/models/post.js
+// db/models/Post.js
 
 module.exports = (sequelize, DataTypes) => {
   const post = sequelize.define(
@@ -227,7 +227,7 @@ const { Post } = require('../../db/models')
 
 const postController = {
     index: async (req, res) => {
-        const posts = await Post.findAll();
+        const posts = await Post.findAll({ order: [['createdAt', 'DESC']] });
 
         return res.json(posts);
     },
@@ -235,10 +235,22 @@ const postController = {
         const { id } = req.params;
         const post = await Post.findByPk(id);
 
+        if (post == null) { // se não for encontrado
+            return res.status(404).json({ error: { message: "O post de id = " + id + " não foi encontrado." } });
+        }
+
         return res.json(post);
     },
     store: async (req, res) => {
         const { title, description } = req.body;
+
+        if (!description) {
+            return res.status(400).json({ error: { message: "O atributo description não foi enviado." } })
+        }
+
+        if (!title) {
+            return res.status(400).json({ error: { message: "O atributo title não foi enviado." } })
+        }
 
         const post = await Post.create({
             title,
@@ -252,17 +264,40 @@ const postController = {
         const { id } = req.params;
         const { title, description } = req.body;
 
-        const post = await Post.findByPk(id);
-        post.set({ title, description });
-        await post.save();
+        if (!description) {
+            return res.status(400).json({ error: { message: "O atributo description não foi enviado." } })
+        }
 
-        return res.json(post);
+        if (!title) {
+            return res.status(400).json({ error: { message: "O atributo title não foi enviado." } })
+        }
+
+        // buscamos um post no banco
+        const post = await Post.findByPk(id);
+        if (post == null) { // se não for encontrado
+            return res.status(404).json({ error: { message: "O post de id = " + id + " não foi encontrado." } });
+        }
+
+        //alteramos o valor original pelo que foi passado pelo request
+        post.set({ title, description });
+        // salvamos a nossa alteração
+        await post.save()
+
+        return res.json(post)
+
     },
     delete: async (req, res) => {
         const { id } = req.params;
+
+        const post = await Post.findByPk(id);
+
+        if (post == null) { // se não for encontrado
+            return res.status(404).json({ error: { message: "O post de id = " + id + " não foi encontrado." } });
+        }
+
         await Post.destroy({ where: { id } });
 
-        return res.status(204).send()
+        return res.status(204).json();
     }
 }
 
@@ -296,8 +331,20 @@ const express = require('express')
 const app = express();
 const postRouter = require('./app/routes/postRouter')
 
+app.use(function (req, res, next) {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+    res.setHeader('Access-Control-Allow-Credentials', true);
+    next();
+});
+
 app.use(express.json());
 app.use('/posts', postRouter);
 
 app.listen(3000, () => console.log('Rodando...'));
 ````
+
+Agora podemos executar 
+
+
