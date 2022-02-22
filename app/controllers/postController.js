@@ -20,11 +20,11 @@ const postController = {
         const { title, description } = req.body;
 
         if (!description) {
-            return res.status(400).json({ error: { message: "O atributo description não foi enviado."} })
+            return res.status(400).json({ error: { message: "O atributo description não foi enviado." } })
         }
 
         if (!title) {
-            return res.status(400).json({ error: { message: "O atributo title não foi enviado."} })
+            return res.status(400).json({ error: { message: "O atributo title não foi enviado." } })
         }
 
         const post = await Post.create({
@@ -40,11 +40,11 @@ const postController = {
         const { title, description } = req.body;
 
         if (!description) {
-            return res.status(400).json({ error: { message: "O atributo description não foi enviado."} })
+            return res.status(400).json({ error: { message: "O atributo description não foi enviado." } })
         }
 
         if (!title) {
-            return res.status(400).json({ error: { message: "O atributo title não foi enviado."} })
+            return res.status(400).json({ error: { message: "O atributo title não foi enviado." } })
         }
 
         // buscamos um post no banco
@@ -52,13 +52,10 @@ const postController = {
         if (post == null) { // se não for encontrado
             return res.status(404).json({ error: { message: "O post de id = " + id + " não foi encontrado." } });
         }
-        
         //alteramos o valor original pelo que foi passado pelo request
         post.set({ title, description });
         // salvamos a nossa alteração
         await post.save()
-
-        // await Post.update({title, description}, { where: { id }})
 
         return res.json(post)
 
