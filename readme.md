@@ -107,7 +107,7 @@ module.exports = {
 
 Agora podemos executar nossa migration
 
-`````powershell
+````powershell
 npx sequelize-cli db:migrate
 ````
 
