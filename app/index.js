@@ -1,6 +1,13 @@
+const dotenv = require('dotenv')
+dotenv.config({
+    path: process.env.NODE_ENV == 'test' ? '.env.test' : '.env'
+})
+
 const express = require('express')
 const app = express();
-const postRouter = require('./app/routes/postRouter')
+const routers = require('./routers')
+const swaggerUi = require('swagger-ui-express');
+const swaggerFile = require('../docs/swagger_output.json')
 
 app.use(function (req, res, next) {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -11,6 +18,9 @@ app.use(function (req, res, next) {
 });
 
 app.use(express.json());
-app.use('/posts', postRouter);
+routers(app)
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerFile))
 
-app.listen(3000, () => console.log('Rodando...'));
+// set routers
+
+module.exports = app;

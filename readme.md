@@ -116,7 +116,7 @@ npx sequelize-cli db:migrate
 `db/factories/postFactory.js`
 ````js
 // db/factories/postFactory.js
-const faker = require('@faker-js/faker/locale/pt_BR');
+const { faker } = require('@faker-js/faker');
 
 function make() {
     const post =  {
@@ -354,7 +354,22 @@ app.listen(3000, () => console.log('Rodando...'));
 Agora podemos executar 
 
 ````powershell
-node index.js
+npm start
 ````
 
+# Tests
 
+Execute o testes:
+
+
+````powershell
+npm test
+````
+
+# Documentação
+
+Estamos utilizando um módulo de geração de documentação automática, Swagger. Então sempre que atualizarmos as definições da nossa documentação vamos precisar executar o seguinte comando para gerar uma atual nossa documentação
+
+````powershell
+npm run swagger-autogen
+````

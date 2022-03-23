@@ -1,7 +1,7 @@
-const faker = require('@faker-js/faker/locale/pt_BR');
+const { faker } = require('@faker-js/faker');
 
 function make() {
-    const post =  {
+    const post = {
         title: faker.hacker.phrase(),
         description: faker.lorem.paragraphs(),
         createdAt: faker.date.past()
@@ -10,7 +10,7 @@ function make() {
     return post;
 }
 
-const factory = (n) =>  {
+const factory = (n) => {
 
     if (n == undefined || n == 1) {
         return make();
