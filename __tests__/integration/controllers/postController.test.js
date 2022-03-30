@@ -1,8 +1,7 @@
 const request = require('supertest')
-const app = require('../../app');
-const { post } = require('../../app/routes/postRouter');
-const postFactory = require('../../db/factories/postFactory')
-const truncate = require('../utils/truncate')
+const app = require('../../../src/app');
+const postFactory = require('../../../src/db/factories/postFactory')
+const truncate = require('../../utils/truncate')
 
 describe('Posts', () => {
     beforeEach(async () => {
@@ -18,6 +17,7 @@ describe('Posts', () => {
         
         return response.body;
     } 
+
 
     it('deveria retornar um erro quanto tentarmos criar um post e não passarmos o dados que serão cadastrados no post', async () => {
         const response = await request(app)

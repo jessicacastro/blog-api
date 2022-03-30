@@ -357,14 +357,30 @@ Agora podemos executar
 npm start
 ````
 
-# Tests
+# Testes
 
-Execute o testes:
+### Execute os testes
 
-
-````powershell
+Executar todos os testes dentro `__tests__`
+````bash
 npm test
 ````
+
+Selecionar apenas um arquivo de teste, para testar individualmente:
+
+````
+npx jest ./__tests__/integrations/user/create.test.js
+````
+
+> OBS: para quem utiliza o Windows será necessário 
+> ````bash
+> npm i -g win-node-env
+> ````
+
+> OBS: talvez durante a execução dos testes o módulo `sqlite3` não seja reconhecido, caso apareça esse erro `ERROR: Please install sqlite3 package manually`, será necessário executar o seguinte comando:
+> ````bash
+> npm i -g sqlite3
+>````
 
 # Documentação
 
@@ -373,3 +389,6 @@ Estamos utilizando um módulo de geração de documentação automática, Swagge
 ````powershell
 npm run swagger-autogen
 ````
+
+Quando formos visualizar a documentação, acessamos o link `http://localhost:3000/docs/`
+
